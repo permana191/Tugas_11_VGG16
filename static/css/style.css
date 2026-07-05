@@ -1,0 +1,111 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-track { background: #f8fafc; }
+
+body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 30px;
+    min-height: 100vh;
+    background-color: #f0f4f8; /* Latar belakang cerah medis */
+    color: #1e293b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    padding: 35px;
+}
+
+/* Header */
+.dashboard-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}
+.header-icon {
+    width: 45px; height: 45px; background: #0ea5e9; border-radius: 10px;
+    display: flex; justify-content: center; align-items: center; margin-right: 15px;
+}
+.dashboard-header h2 { font-weight: 700; color: #0f172a; margin: 0; font-size: 1.8rem; }
+.dashboard-header p { color: #64748b; margin: 5px 0 0 0; font-size: 0.95rem; }
+
+/* Panels */
+.panel {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+}
+.panel h4 { 
+    font-size: 1rem; font-weight: 600; color: #0284c7; 
+    margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 8px;
+}
+
+/* Formulir & Kontrol */
+.form-control-custom {
+    background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b;
+    border-radius: 8px; padding: 12px 15px; width: 100%; margin-bottom: 15px;
+    font-size: 0.9rem; transition: 0.2s;
+}
+.form-control-custom:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+.form-control-custom::placeholder { color: #94a3b8; }
+
+/* Radiology Image Controls */
+.image-controls { display: flex; gap: 15px; margin-top: 15px; }
+.control-group { flex: 1; }
+.control-group label { font-size: 0.8rem; color: #475569; display: block; margin-bottom: 5px; font-weight: 600;}
+.range-slider { width: 100%; cursor: pointer; accent-color: #0ea5e9; }
+
+/* Upload Area */
+.upload-zone {
+    border: 2px dashed #94a3b8; padding: 40px 20px; border-radius: 12px;
+    cursor: pointer; text-align: center; transition: 0.3s; background: #ffffff;
+}
+.upload-zone:hover { border-color: #0ea5e9; background: #f0f9ff; }
+#preview { 
+    width: 100%; height: 250px; object-fit: contain; border-radius: 8px; 
+    margin-top: 15px; display: none; background: #0f172a; border: 1px solid #cbd5e1;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(to right, #0ea5e9, #0284c7); color: #fff; font-weight: 600; border: none;
+    padding: 14px; border-radius: 8px; width: 100%; transition: 0.2s;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; cursor: pointer;
+}
+.btn-primary:hover { box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); transform: translateY(-1px);}
+.btn-primary:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; box-shadow: none; transform: none;}
+
+.btn-secondary {
+    background: #ffffff; border: 1px solid #0ea5e9; color: #0ea5e9;
+    padding: 12px; border-radius: 8px; width: 100%; transition: 0.2s;
+    font-weight: 600; margin-top: 10px; cursor: pointer;
+}
+.btn-secondary:hover { background: #f0f9ff; }
+
+/* Result Area */
+.result-box { background: #ffffff; padding: 20px; border-radius: 10px; border-left: 4px solid #0ea5e9; border: 1px solid #e2e8f0; border-left-width: 4px; margin-bottom: 20px;}
+.diagnosis-alert { font-size: 1.6rem; font-weight: 700; margin: 5px 0 15px 0; }
+
+.progress-bg { background: #e2e8f0; border-radius: 6px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px;}
+.progress-fill { height: 100%; width: 0%; border-radius: 6px; transition: width 1s ease-in-out; }
+
+/* Responsive */
+@media (max-width: 900px) { .dashboard-container { grid-template-columns: 1fr; } }

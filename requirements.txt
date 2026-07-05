@@ -1,0 +1,10 @@
+Flask
+tensorflow
+Pillow
+numpy
+matplotlib
+seaborn
+scikit-learn
+Werkzeug
+gunicorn
+reportlab
