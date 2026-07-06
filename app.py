@@ -4,18 +4,42 @@ import numpy as np
 from PIL import Image
 import io
 import os
+import gdown
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
+import textwrap
 
 app = Flask(__name__)
 
-# Load model VGG16
+# --- Konfigurasi Auto-Download Model dari Google Drive ---
 MODEL_PATH = "models/model_vgg16.h5"
+FILE_ID = "1ZYLjPE7J7VCIAeTv4Lxulf3d3EZG8tDE"
+
+# Pastikan folder models/ ada
+os.makedirs("models", exist_ok=True)
+
+# Unduh model jika belum ada di server (berguna untuk Railway)
+if not os.path.exists(MODEL_PATH):
+    print("Mengunduh model VGG16 dari Google Drive...")
+    url = f"https://drive.google.com/uc?id={FILE_ID}"
+    try:
+        gdown.download(url, MODEL_PATH, quiet=False)
+        print("Pengunduhan selesai.")
+    except Exception as e:
+        print(f"Gagal mengunduh model: {e}")
+
+# Load model VGG16
 if os.path.exists(MODEL_PATH):
-    model = tf.keras.models.load_model(MODEL_PATH)
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print("Model berhasil dimuat ke dalam memori.")
+    except Exception as e:
+        model = None
+        print(f"Error saat memuat model: {e}")
 else:
     model = None
+    print("Peringatan: Model gagal diunduh atau tidak ditemukan.")
 
 CLASS_NAMES = ["Glioma Tumor", "Meningioma Tumor", "Tidak Ada Tumor (Normal)", "Pituitary Tumor"]
 
@@ -34,7 +58,7 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     if model is None:
-        return jsonify({"error": "Sistem belum siap. Model prediksi tidak ditemukan."}), 500
+        return jsonify({"error": "Sistem belum siap. Model prediksi tidak ditemukan atau masih diunduh."}), 500
 
     if "file" not in request.files:
         return jsonify({"error": "Tidak ada file yang diunggah"}), 400
@@ -61,7 +85,6 @@ def predict():
 @app.route("/export_pdf", methods=["POST"])
 def export_pdf():
     try:
-        # Menangkap data dari form frontend
         patient_name = request.form.get("patientName", "Tidak Diberikan")
         patient_id = request.form.get("patientId", "-")
         patient_age = request.form.get("patientAge", "-")
@@ -70,49 +93,45 @@ def export_pdf():
         notes = request.form.get("notes", "Tidak ada catatan klinis.")
         file = request.files.get("file")
 
-        # Inisialisasi PDF di memori (RAM)
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
 
-        # Menyusun Header Laporan
+        # Header
         p.setFont("Helvetica-Bold", 16)
         p.drawString(50, height - 50, "Laporan Diagnostik MRI - VGG16 NeuroDiagnostics")
         
-        # Menyusun Data Pasien
+        # Data Pasien
         p.setFont("Helvetica", 12)
         p.drawString(50, height - 90, f"Nama Pasien : {patient_name}")
         p.drawString(50, height - 110, f"ID Rekam Medis: {patient_id}")
         p.drawString(50, height - 130, f"Usia Pasien : {patient_age} Tahun")
         
-        # Menyusun Hasil Diagnosis
+        # Hasil Diagnosis
         p.drawString(50, height - 170, "Hasil Analisis Artificial Intelligence (VGG-16):")
         p.setFont("Helvetica-Bold", 12)
         
-        # Warna teks merah jika ada tumor, hijau jika normal
         if "Tidak Ada" in prediction or "Normal" in prediction:
             p.setFillColorRGB(0, 0.6, 0) # Hijau
         else:
             p.setFillColorRGB(0.8, 0, 0) # Merah
 
         p.drawString(50, height - 190, f"Diagnosis: {prediction}")
-        p.setFillColorRGB(0, 0, 0) # Kembali ke hitam
+        p.setFillColorRGB(0, 0, 0)
         p.drawString(50, height - 210, f"Tingkat Keyakinan Model: {confidence}")
         
-        # Menyusun Catatan Klinis
+        # Catatan Klinis
         p.setFont("Helvetica", 12)
         p.drawString(50, height - 250, "Catatan Observasi Dokter:")
         
-        # Memecah teks catatan agar tidak keluar garis (text wrap sederhana)
         textobject = p.beginText(50, height - 270)
         textobject.setFont("Helvetica", 11)
-        import textwrap
         wrapped_notes = textwrap.wrap(notes, width=80)
         for line in wrapped_notes:
             textobject.textLine(line)
         p.drawText(textobject)
         
-        # Menempelkan Gambar MRI jika ada
+        # Gambar MRI
         if file:
             img = Image.open(io.BytesIO(file.read()))
             img_reader = ImageReader(img)
@@ -122,10 +141,11 @@ def export_pdf():
         p.save()
         buffer.seek(0)
 
-        # Mengirimkan file PDF ke pengguna
         return send_file(buffer, as_attachment=True, download_name="Laporan_Diagnostik_MRI.pdf", mimetype="application/pdf")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Konfigurasi port dinamis untuk deployment cloud
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
