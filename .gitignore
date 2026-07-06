@@ -1,2 +1,23 @@
+# Lingkungan virtual Python
+.venv/
 venv/
+env/
+
+# Folder Dataset
 dataset/
+
+# Folder Models dan ekstensi file berat
+models/
+*.h5
+*.hdf5
+*.keras
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# File sistem OS
+.DS_Store
+Thumbs.db
