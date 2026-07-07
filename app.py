@@ -19,17 +19,25 @@ FILE_ID = "1ZYLjPE7J7VCIAeTv4Lxulf3d3EZG8tDE"
 # Pastikan folder models/ ada
 os.makedirs("models", exist_ok=True)
 
-# Unduh model jika belum ada di server (berguna untuk Railway)
+# 1. Cek apakah file ada tapi rusak/palsu (ukurannya terlalu kecil, misal < 10MB)
+if os.path.exists(MODEL_PATH):
+    file_size = os.path.getsize(MODEL_PATH)
+    if file_size < 10 * 1024 * 1024:  # Jika kurang dari 10 MB
+        print(f"File model tidak valid terdeteksi (Ukuran: {file_size} bytes). Menghapus file...")
+        os.remove(MODEL_PATH)
+
+# 2. Unduh model jika file tidak ada (atau baru saja dihapus)
 if not os.path.exists(MODEL_PATH):
     print("Mengunduh model VGG16 dari Google Drive...")
     url = f"https://drive.google.com/uc?id={FILE_ID}"
     try:
-        gdown.download(url, MODEL_PATH, quiet=False)
+        # fuzzy=True membantu melewati halaman peringatan scan virus Google Drive
+        gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
         print("Pengunduhan selesai.")
     except Exception as e:
         print(f"Gagal mengunduh model: {e}")
 
-# Load model VGG16
+# 3. Load model VGG16
 if os.path.exists(MODEL_PATH):
     try:
         model = tf.keras.models.load_model(MODEL_PATH)
