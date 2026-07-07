@@ -42,7 +42,7 @@ if not os.path.exists(MODEL_PATH):
 # 3. Load model VGG16 ke memori
 if os.path.exists(MODEL_PATH):
     try:
-        model = tf.keras.models.load_model(MODEL_PATH)
+        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
         print("Model berhasil dimuat ke dalam memori.")
     except Exception as e:
         model = None
