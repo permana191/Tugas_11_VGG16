@@ -1,111 +1,293 @@
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-::-webkit-scrollbar-track { background: #f8fafc; }
+/* =========================================
+   VGG-16 NEURODIAGNOSTICS - CLINICAL UI
+========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-blue: #1e40af; /* Biru Medis / Royal Blue */
+    --secondary-blue: #3b82f6;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --border-light: #e5e7eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --radius-lg: 12px;
+    --radius-md: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
 
 body {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 30px;
-    min-height: 100vh;
-    background-color: #f0f4f8; /* Latar belakang cerah medis */
-    color: #1e293b;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+/* --- Header / Navbar --- */
+.navbar {
+    background-color: var(--card-bg);
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-blue);
+    margin-bottom: 2rem;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar-icon {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    font-size: 1.2rem;
+}
+
+.navbar-title h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.navbar-title p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* --- Dashboard Layout --- */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dua kolom sejajar */
+    gap: 1.5rem;
+}
+
+/* --- Card Styles --- */
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.card-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 0.8rem;
+}
+
+/* --- Form & Inputs --- */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+input[type="text"], input[type="number"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background-color: #f9fafb;
+}
+
+input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--secondary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background-color: white;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* --- Image Upload Area --- */
+.image-upload-wrapper {
+    border: 2px dashed var(--secondary-blue);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    background-color: #eff6ff;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s;
+}
+
+.image-preview-container {
+    background-color: #000; /* Gelap seperti layar radiologi asli */
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.image-preview-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* --- Slider Controls --- */
+.slider-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.slider-container {
+    width: 100%;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary-blue);
+}
+
+/* --- AI Diagnostics Result Box --- */
+.result-box {
+    background-color: #f9fafb;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.result-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.result-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.result-value.error { color: var(--danger); }
+.result-value.normal { color: var(--success); }
+.result-value.tumor { color: var(--danger); }
+
+/* --- Progress Bar --- */
+.progress-container {
+    background-color: var(--border-light);
+    border-radius: 20px;
+    height: 10px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--secondary-blue), var(--primary-blue));
+    height: 100%;
+    border-radius: 20px;
+    width: 0%; /* Diatur oleh JavaScript */
+    transition: width 0.8s ease-in-out;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.4rem;
+    color: var(--text-muted);
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-size: 1rem;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 8px;
 }
 
-/* Dashboard Layout */
-.dashboard-container {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-    width: 100%;
-    max-width: 1200px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    padding: 35px;
-}
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-primary:active { transform: scale(0.98); }
 
-/* Header */
-.dashboard-header {
-    grid-column: 1 / -1;
+.btn-group {
     display: flex;
-    align-items: center;
-    border-bottom: 2px solid #f1f5f9;
-    padding-bottom: 20px;
-    margin-bottom: 10px;
-}
-.header-icon {
-    width: 45px; height: 45px; background: #0ea5e9; border-radius: 10px;
-    display: flex; justify-content: center; align-items: center; margin-right: 15px;
-}
-.dashboard-header h2 { font-weight: 700; color: #0f172a; margin: 0; font-size: 1.8rem; }
-.dashboard-header p { color: #64748b; margin: 5px 0 0 0; font-size: 0.95rem; }
-
-/* Panels */
-.panel {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 25px;
-    border: 1px solid #e2e8f0;
-}
-.panel h4 { 
-    font-size: 1rem; font-weight: 600; color: #0284c7; 
-    margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;
-    display: flex; align-items: center; gap: 8px;
+    gap: 1rem;
 }
 
-/* Formulir & Kontrol */
-.form-control-custom {
-    background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b;
-    border-radius: 8px; padding: 12px 15px; width: 100%; margin-bottom: 15px;
-    font-size: 0.9rem; transition: 0.2s;
-}
-.form-control-custom:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
-.form-control-custom::placeholder { color: #94a3b8; }
-
-/* Radiology Image Controls */
-.image-controls { display: flex; gap: 15px; margin-top: 15px; }
-.control-group { flex: 1; }
-.control-group label { font-size: 0.8rem; color: #475569; display: block; margin-bottom: 5px; font-weight: 600;}
-.range-slider { width: 100%; cursor: pointer; accent-color: #0ea5e9; }
-
-/* Upload Area */
-.upload-zone {
-    border: 2px dashed #94a3b8; padding: 40px 20px; border-radius: 12px;
-    cursor: pointer; text-align: center; transition: 0.3s; background: #ffffff;
-}
-.upload-zone:hover { border-color: #0ea5e9; background: #f0f9ff; }
-#preview { 
-    width: 100%; height: 250px; object-fit: contain; border-radius: 8px; 
-    margin-top: 15px; display: none; background: #0f172a; border: 1px solid #cbd5e1;
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
 }
 
-/* Buttons */
-.btn-primary {
-    background: linear-gradient(to right, #0ea5e9, #0284c7); color: #fff; font-weight: 600; border: none;
-    padding: 14px; border-radius: 8px; width: 100%; transition: 0.2s;
-    text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; cursor: pointer;
+.btn-outline:hover {
+    background-color: #eff6ff;
 }
-.btn-primary:hover { box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); transform: translateY(-1px);}
-.btn-primary:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; box-shadow: none; transform: none;}
 
-.btn-secondary {
-    background: #ffffff; border: 1px solid #0ea5e9; color: #0ea5e9;
-    padding: 12px; border-radius: 8px; width: 100%; transition: 0.2s;
-    font-weight: 600; margin-top: 10px; cursor: pointer;
+/* Responsivitas untuk layar kecil */
+@media (max-width: 900px) {
+    .dashboard-container { grid-template-columns: 1fr; }
 }
-.btn-secondary:hover { background: #f0f9ff; }
-
-/* Result Area */
-.result-box { background: #ffffff; padding: 20px; border-radius: 10px; border-left: 4px solid #0ea5e9; border: 1px solid #e2e8f0; border-left-width: 4px; margin-bottom: 20px;}
-.diagnosis-alert { font-size: 1.6rem; font-weight: 700; margin: 5px 0 15px 0; }
-
-.progress-bg { background: #e2e8f0; border-radius: 6px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px;}
-.progress-fill { height: 100%; width: 0%; border-radius: 6px; transition: width 1s ease-in-out; }
-
-/* Responsive */
-@media (max-width: 900px) { .dashboard-container { grid-template-columns: 1fr; } }

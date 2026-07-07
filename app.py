@@ -4,7 +4,8 @@ import numpy as np
 from PIL import Image
 import io
 import os
-import gdown
+import urllib.request
+import shutil
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
@@ -12,39 +13,40 @@ import textwrap
 
 app = Flask(__name__)
 
-# --- Konfigurasi Auto-Download Model dari Google Drive ---
+# --- Konfigurasi Unduh Model dari GitHub Releases ---
 MODEL_PATH = "models/model_vgg16.h5"
-FILE_ID = "1ZYLjPE7J7VCIAeTv4Lxulf3d3EZG8tDE"
+# Pastikan tag v1.0 sesuai dengan nama tag yang kamu buat di GitHub Release
+MODEL_URL = "https://github.com/permana191/Tugas_11_VGG16/releases/download/v1.0/model_vgg16.h5"
 
-# Pastikan folder models/ ada
+# Pastikan folder models/ tersedia
 os.makedirs("models", exist_ok=True)
 
-# 1. Cek apakah file ada tapi rusak/palsu (ukurannya terlalu kecil, misal < 10MB)
+# 1. Hapus file jika rusak/berupa halaman web (ukuran di bawah 10 MB)
 if os.path.exists(MODEL_PATH):
     file_size = os.path.getsize(MODEL_PATH)
-    if file_size < 10 * 1024 * 1024:  # Jika kurang dari 10 MB
+    if file_size < 10 * 1024 * 1024:
         print(f"File model tidak valid terdeteksi (Ukuran: {file_size} bytes). Menghapus file...")
         os.remove(MODEL_PATH)
 
-# 2. Unduh model jika file tidak ada (atau baru saja dihapus)
+# 2. Unduh model langsung dari GitHub dengan User-Agent (Menyamar sebagai Browser)
 if not os.path.exists(MODEL_PATH):
-    print("Mengunduh model VGG16 dari Google Drive...")
-    url = f"https://drive.google.com/uc?id={FILE_ID}"
+    print("Mengunduh model VGG16 dari GitHub Releases...")
     try:
-        # fuzzy=True membantu melewati halaman peringatan scan virus Google Drive
-        gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
-        print("Pengunduhan selesai.")
+        req = urllib.request.Request(MODEL_URL, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+        with urllib.request.urlopen(req) as response, open(MODEL_PATH, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
+        print("Pengunduhan dari GitHub selesai.")
     except Exception as e:
         print(f"Gagal mengunduh model: {e}")
 
-# 3. Load model VGG16
+# 3. Load model VGG16 ke memori
 if os.path.exists(MODEL_PATH):
     try:
         model = tf.keras.models.load_model(MODEL_PATH)
         print("Model berhasil dimuat ke dalam memori.")
     except Exception as e:
         model = None
-        print(f"Error saat memuat model: {e}")
+        print(f"Error fatal saat memuat model: {e}")
 else:
     model = None
     print("Peringatan: Model gagal diunduh atau tidak ditemukan.")
@@ -105,17 +107,17 @@ def export_pdf():
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
 
-        # Header
+        # Menyusun Header Laporan
         p.setFont("Helvetica-Bold", 16)
         p.drawString(50, height - 50, "Laporan Diagnostik MRI - VGG16 NeuroDiagnostics")
         
-        # Data Pasien
+        # Menyusun Data Pasien
         p.setFont("Helvetica", 12)
         p.drawString(50, height - 90, f"Nama Pasien : {patient_name}")
         p.drawString(50, height - 110, f"ID Rekam Medis: {patient_id}")
         p.drawString(50, height - 130, f"Usia Pasien : {patient_age} Tahun")
         
-        # Hasil Diagnosis
+        # Menyusun Hasil Diagnosis
         p.drawString(50, height - 170, "Hasil Analisis Artificial Intelligence (VGG-16):")
         p.setFont("Helvetica-Bold", 12)
         
@@ -128,7 +130,7 @@ def export_pdf():
         p.setFillColorRGB(0, 0, 0)
         p.drawString(50, height - 210, f"Tingkat Keyakinan Model: {confidence}")
         
-        # Catatan Klinis
+        # Menyusun Catatan Klinis
         p.setFont("Helvetica", 12)
         p.drawString(50, height - 250, "Catatan Observasi Dokter:")
         
@@ -139,7 +141,7 @@ def export_pdf():
             textobject.textLine(line)
         p.drawText(textobject)
         
-        # Gambar MRI
+        # Menempelkan Gambar MRI
         if file:
             img = Image.open(io.BytesIO(file.read()))
             img_reader = ImageReader(img)
@@ -154,6 +156,5 @@ def export_pdf():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    # Konfigurasi port dinamis untuk deployment cloud
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port, debug=False)
